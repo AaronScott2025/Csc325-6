@@ -21,9 +21,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class AccessFBView {
 
@@ -40,12 +39,24 @@ public class AccessFBView {
     private Button readButton;
     @FXML
     private TextArea outputField;
+    @FXML
+    private TableView<Person> tbl = new TableView<>();
      private boolean key;
     private ObservableList<Person> listOfUsers = FXCollections.observableArrayList();
     private Person person;
     public ObservableList<Person> getListOfUsers() {
+
         return listOfUsers;
     }
+    @FXML
+    private TableColumn<Person, String> nameCol = new TableColumn<>();;
+
+    @FXML
+    private TableColumn<Person, String> majorCol = new TableColumn<>();;
+
+    @FXML
+    private TableColumn<Person, Integer>ageCol = new TableColumn<>();;
+
 
     void initialize() {
 
@@ -87,7 +98,7 @@ public class AccessFBView {
         ApiFuture<WriteResult> result = docRef.set(data);
     }
 
-        public boolean readFirebase()
+    public boolean readFirebase()
          {
              key = false;
 
@@ -95,6 +106,15 @@ public class AccessFBView {
         ApiFuture<QuerySnapshot> future =  App.fstore.collection("References").get();
         // future.get() blocks on response
         List<QueryDocumentSnapshot> documents;
+             nameCol.setCellValueFactory(
+                     new PropertyValueFactory<>("name")
+             );
+             majorCol.setCellValueFactory(
+                     new PropertyValueFactory<>("major")
+             );
+             ageCol.setCellValueFactory(
+                     new PropertyValueFactory<>("age")
+             );
         try
         {
             documents = future.get().getDocuments();
@@ -103,15 +123,20 @@ public class AccessFBView {
                 System.out.println("Outing....");
                 for (QueryDocumentSnapshot document : documents)
                 {
-                    outputField.setText(outputField.getText()+ document.getData().get("Name")+ " , Major: "+
-                            document.getData().get("Major")+ " , Age: "+
-                            document.getData().get("Age")+ " \n ");
-                    System.out.println(document.getId() + " => " + document.getData().get("Name"));
-                    person  = new Person(String.valueOf(document.getData().get("Name")),
-                            document.getData().get("Major").toString(),
-                            Integer.parseInt(document.getData().get("Age").toString()));
+                    person = new Person(
+                            String.valueOf(document.getData().get("Name")),
+                            String.valueOf(document.getData().get("Major")),
+                            Integer.parseInt(document.getData().get("Age").toString())
+                    );
+//                    System.out.println(p.getName());
+//                    System.out.println(p.getMajor()); Prints correctly
+//                    System.out.println(p.getAge());
                     listOfUsers.add(person);
                 }
+//                for(Person p : listOfUsers) {
+//                    System.out.println(p.getName());  List Prints Correctly
+//                }
+                tbl.setItems(listOfUsers);
             }
             else
             {

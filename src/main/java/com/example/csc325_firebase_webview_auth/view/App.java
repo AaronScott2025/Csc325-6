@@ -36,7 +36,7 @@ public class App extends Application {
         }
         fauth = FirebaseAuth.getInstance();
         scene = new Scene(loadFXML("/files/AccessFBView.fxml"));
-        scene.getStylesheets().add("/files/style.css");
+        scene.getStylesheets().add(getClass().getResource("/files/style.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
